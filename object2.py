@@ -5,9 +5,11 @@ import math
 
 WINDOW_NAME = 'Full Integration'
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 560)
+cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1980)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+# cap.set(cv2.CAP_PROP_AUTOFOCUS, 6)
+cap.set(cv2.CAP_PROP_FPS, 120)
 model = YOLO("./yolo_nano_small.pt")
 
 classNames = ['missing', 'overlaps']
@@ -29,16 +31,21 @@ while cap.isOpened():
             cls = int(box.cls[0])
             currentClass = classNames[cls]
             
-            if currentClass == 'missing':
-                myColor = (0,0,255)
-            else:
-                myColor = (18, 191, 41)
-            
-            cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 3)
-            cvzone.putTextRect(img, f'{classNames[cls]} {conf}',
-                               (max(0, x1), max(35, y1)), scale=1.3, thickness=2, colorB=myColor,
-                               colorT=(255, 255, 255), colorR=myColor, offset=5)
-            cv2.rectangle(img, (x1, y1), (x2, y2), myColor, 1)
+            if conf>0.40:
+                if currentClass == 'missing':
+                    myColor = (0,0,255)
+                else:
+                    myColor = (18, 191, 41)
+                
+                img = cvzone.cornerRect(
+                img,  # The image to draw on
+                (x1,y1,w,h),  # The position and dimensions of the rectangle (x, y, width, height)
+                l=1,  # Length of the corner edges
+                t=2,  # Thickness of the corner edges
+                rt=2,  # Thickness of the rectangle
+                colorR=myColor,  # Color of the rectangle
+                colorC=myColor  # Color of the corner edges
+            )
 
     cv2.imshow("Image", img)
     cv2.waitKey(1)

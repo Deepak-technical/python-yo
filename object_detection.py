@@ -6,11 +6,12 @@ import math
 WINDOW_NAME = 'Full Integration'
 
 cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+# cap = cv2.VideoCapture('./video3.mp4')
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1980)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 # cap.set(cv2.CAP_PROP_AUTOFOCUS, 6)
 cap.set(cv2.CAP_PROP_FPS, 120)
-model = YOLO("./yolo_nano_small.pt")
+model = YOLO("./YOLO8_weights/yolo_nano_small.pt")
 
 classNames = ['missing', 'overlaps']
 myColor = (0, 0, 0)
@@ -31,7 +32,7 @@ while cap.isOpened():
             cls = int(box.cls[0])
             currentClass = classNames[cls]
             
-            if conf>0.40:
+            if (conf>0.20 and currentClass=='missing') or (conf>0.35 and currentClass=='overlaps') :
                 if currentClass == 'missing':
                     myColor = (0,0,255)
                 else:
